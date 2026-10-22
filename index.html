@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Answer four short sections about your interests, strengths, goals and school preferences to see majors and types of colleges that fit you.">
+<style>[hidden]{display:none!important} body{margin:0} img{max-width:100%}</style>
+<title>Major &amp; School Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a registrar-style intake form. Section rail on the left (desktop), one question sheet at a time, results as a ranked catalog. */
+:root {
+  --paper: #F2F5F3;
+  --sheet: #FFFFFF;
+  --ink: #1B2A28;
+  --muted: #5A6A67;
+  --line: #D3DCD8;
+  --accent: #2E5E51;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E0ECE7;
+  --mark: #E2A62E;
+  --mark-soft: #FBF0D6;
+  --font-display: "Young Serif", Georgia, "Times New Roman", serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111816; --sheet: #172120; --ink: #E4ECE9; --muted: #95A6A1; --line: #2B3835;
+    --accent: #7DC0A8; --accent-ink: #0F1A17; --accent-soft: #1F3530; --mark: #E8B64C; --mark-soft: #3A3020;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111816; --sheet: #172120; --ink: #E4ECE9; --muted: #95A6A1; --line: #2B3835;
+  --accent: #7DC0A8; --accent-ink: #0F1A17; --accent-soft: #1F3530; --mark: #E8B64C; --mark-soft: #3A3020;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
+
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+@media (max-width: 820px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 20px; } }
+
+/* rail */
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); align-self: start; display: flex; flex-direction: column; gap: 22px; }
+.brand { display: flex; flex-direction: column; gap: 4px; }
+.brand h1 { font-size: 1.6rem; line-height: 1.15; }
+.brand p { color: var(--muted); font-size: .9rem; }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-left: 1px solid var(--line); }
+.steps button {
+  width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+  display: grid; grid-template-columns: 2.2em 1fr; align-items: baseline; padding: 9px 12px; margin-left: -1px;
+  border-left: 3px solid transparent; color: var(--muted);
+}
+.steps button .n { font-family: var(--font-mono); font-size: .78rem; }
+.steps button.done { color: var(--ink); }
+.steps button.on { border-left-color: var(--accent); color: var(--ink); font-weight: 600; }
+.steps button:disabled { cursor: default; opacity: .55; }
+.rail-note { font-size: .82rem; color: var(--muted); background: var(--mark-soft); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; font-size: .82rem; text-align: left; }
+@media (max-width: 820px) {
+  .rail { position: static; }
+  .steps { flex-direction: row; border-left: 0; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .steps button { grid-template-columns: auto; border-left: 0; border-bottom: 3px solid transparent; margin: 0 0 -1px; white-space: nowrap; padding: 8px 10px; }
+  .steps button .n { display: none; }
+  .steps button.on { border-bottom-color: var(--accent); }
+}
+
+/* sheet */
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: clamp(20px, 4vw, 40px); display: flex; flex-direction: column; gap: 32px; min-width: 0; }
+.sheet-head { display: flex; flex-direction: column; gap: 8px; }
+.eyebrow { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.sheet-head h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); line-height: 1.15; }
+.sheet-head p { color: var(--muted); max-width: 60ch; }
+
+.q { display: flex; flex-direction: column; gap: 14px; }
+.q > label, .q-title { font-weight: 600; font-size: 1.02rem; }
+.q-hint { color: var(--muted); font-size: .9rem; margin-top: -10px; }
+
+/* chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 8px 14px; cursor: pointer;
+  font-size: .93rem; display: inline-flex; align-items: center; gap: 6px; transition: background .15s, border-color .15s;
+}
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip .tick { display: none; }
+.chip[aria-pressed="true"] .tick { display: inline; }
+
+/* rating rows */
+.ratings { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.rate-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 20px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.rate-row .lbl { display: flex; flex-direction: column; min-width: 0; }
+.rate-row .lbl b { font-weight: 600; }
+.rate-row .lbl span { color: var(--muted); font-size: .85rem; }
+.scale { display: flex; gap: 4px; }
+.scale button {
+  width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); cursor: pointer;
+  font-family: var(--font-mono); font-size: .85rem; font-variant-numeric: tabular-nums;
+}
+.scale button:hover { border-color: var(--accent); }
+.scale button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.scale-legend { display: flex; justify-content: flex-end; gap: 12px; font-size: .75rem; color: var(--muted); font-family: var(--font-mono); }
+@media (max-width: 520px) { .rate-row { grid-template-columns: minmax(0, 1fr); } .scale button { flex: 1; } .scale { width: 100%; } }
+
+/* option cards */
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.opt {
+  text-align: left; border: 1px solid var(--line); background: var(--paper); border-radius: var(--r); padding: 12px 14px; cursor: pointer;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.opt:hover { border-color: var(--accent); }
+.opt b { font-weight: 600; }
+.opt span { color: var(--muted); font-size: .85rem; }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.nav { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid var(--line); }
+.btn { border-radius: 999px; padding: 11px 22px; cursor: pointer; font-weight: 600; border: 1px solid var(--line); background: transparent; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: .45; cursor: default; }
+.warn { color: var(--muted); font-size: .88rem; align-self: center; }
+
+/* results */
+.profile { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+.profile h3 { font-family: var(--font-body); font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.bars { display: flex; flex-direction: column; gap: 7px; }
+.bar { display: grid; grid-template-columns: 9.5em 1fr; gap: 10px; align-items: center; font-size: .86rem; }
+.bar i { display: block; height: 8px; border-radius: 4px; background: var(--line); position: relative; overflow: hidden; }
+.bar i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); background: var(--accent); border-radius: 4px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: .8rem; padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--ink); }
+
+.majors { display: flex; flex-direction: column; gap: 14px; }
+.major { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 6px 18px; }
+.major.top { border-color: var(--mark); box-shadow: inset 0 0 0 1px var(--mark); }
+.score { grid-row: span 3; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.score svg { width: 58px; height: 58px; }
+.score small { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); letter-spacing: .05em; }
+.major-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.major-head h3 { font-size: 1.3rem; }
+.cip { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); }
+.best { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: var(--mark); color: #2A2008; padding: 2px 8px; border-radius: 4px; }
+.why { color: var(--ink); font-size: .94rem; max-width: 70ch; }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 24px; font-size: .88rem; }
+.meta dt { font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.meta dd { margin: 2px 0 0; }
+@media (max-width: 520px) { .major { grid-template-columns: minmax(0, 1fr); } .score { grid-row: auto; flex-direction: row; justify-content: flex-start; gap: 10px; } }
+
+.more { font-size: .9rem; color: var(--muted); }
+.more b { color: var(--ink); font-weight: 600; }
+
+.schools { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.school { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.school .top-line { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.school h3 { font-size: 1.1rem; }
+.fit { font-family: var(--font-mono); font-size: .78rem; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.school p { font-size: .9rem; color: var(--muted); }
+.school ul { margin: 0; padding-left: 1.1em; font-size: .88rem; display: flex; flex-direction: column; gap: 3px; }
+.school .look { font-size: .85rem; border-top: 1px dashed var(--line); padding-top: 8px; }
+.school .look b { font-weight: 600; }
+
+.next { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; max-width: 70ch; }
+.fine { font-size: .82rem; color: var(--muted); max-width: 70ch; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .sheet { animation: rise .35s ease both; }
+  @keyframes rise { from { transform: translateY(6px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <aside class="rail">
+    <div class="brand">
+      <h1>Major &amp; School Finder</h1>
+      <p>Four short sections, about 5 minutes. Answer for how you are now, not how you think you should be.</p>
+    </div>
+    <ol class="steps" id="steps"></ol>
+    <div class="rail-note" id="railNote">
+      <span id="railMsg"></span>
+      <button class="linkbtn" id="clearBtn" type="button">Start over</button>
+    </div>
+  </aside>
+  <main class="sheet" id="sheet" aria-live="polite"></main>
+</div>
+
+<script>
+// ---------- Question content ----------
+const INTERESTS = [
+  ["tech","Computers & technology"],["science","How nature & bodies work"],["health","Health & medicine"],
+  ["people","Helping & understanding people"],["arts","Art, design & visuals"],["perform","Music, film & performance"],
+  ["words","Reading, writing & stories"],["society","Politics, history & society"],["business","Business & money"],
+  ["building","Building & fixing things"],["numbers","Puzzles, patterns & math"],["environment","Environment & outdoors"],
+  ["teaching","Teaching & coaching"],["media","Media, social & communication"]
+];
+const SUBJECTS = [
+  ["math","Math","Algebra, calculus, statistics"],["lab","Lab science","Biology, chemistry, physics"],
+  ["english","English","Literature, essays, analysis"],["social","Social studies","History, government, economics"],
+  ["artclass","Art / music / drama","Creative classes & electives"],["cs","Computer science","Coding, robotics, digital media"]
+];
+const STRENGTHS = [
+  ["quant","Working with numbers","Comfortable with math, data, estimates"],
+  ["writing","Writing & explaining","Clear essays, arguments, instructions"],
+  ["creative","Creative ideas","Coming up with original concepts or designs"],
+  ["empathy","Reading people","Listening, noticing how others feel"],
+  ["hands","Hands-on skill","Building, repairing, lab or studio work"],
+  ["analysis","Research & analysis","Digging into a question until it makes sense"],
+  ["lead","Leading & persuading","Organizing groups, convincing others"],
+  ["detail","Detail & follow-through","Careful, organized, finishes what's started"]
+];
+const GOALS = [
+  ["pay","Earning potential","A strong salary matters a lot to me"],
+  ["impact","Helping others","My work should directly improve people's lives"],
+  ["stable","Job security","A clear path to steady employment"],
+  ["create","Creative freedom","Room to make things my own way"],
+  ["discover","Discovery & ideas","Research, big questions, maybe grad school"],
+  ["flex","Independence","Flexible schedule, my own business, remote options"]
+];
+const WORKSTYLE = [
+  ["team","With a team","Collaborative, social, lots of conversation"],
+  ["solo","Mostly on my own","Focused, independent work"],
+  ["mix","A mix of both","Depends on the day"]
+];
+const PLAN = [
+  ["work","Start working","Get a job right after the bachelor's"],
+  ["grad","Grad or professional school","Med, law, PhD, master's"],
+  ["unsure","Not sure yet","Want to keep options open"]
+];
+const SIZE = [["small","Small","Under 5,000 students"],["mid","Medium","5,000–15,000"],["large","Large","15,000+"],["any","No preference",""]];
+const SETTING = [["city","City","Walkable, internships nearby"],["suburb","Suburban","Some of both"],["town","Small town / rural","Campus is the community"],["any","No preference",""]];
+const DISTANCE = [["home","Close to home","Within a couple hours"],["region","Same region","A day's drive"],["far","Anywhere","Happy to move far"]];
+const COST = [["low","Keep it as low as possible","Cost is a deciding factor"],["mid","Value matters","Will pay more for the right fit"],["aid","Depends on aid","Need-based aid will decide it"]];
+const VIBES = [
+  ["research","Research opportunities"],["career","Internships & co-ops"],["smallclass","Small classes, know professors"],
+  ["spirit","Big sports & school spirit"],["arts","Creative / arts scene"],["diverse","Wide range of majors"],
+  ["community","Close-knit community"],["flexible","Flexible / part-time options"]
+];
+
+// ---------- Majors (CIP 2020 codes) ----------
+const MAJORS = [
+  {n:"Computer Science",cip:"11.0701",i:["tech","numbers"],s:{quant:3,analysis:2,detail:2,creative:1},g:{pay:3,stable:2,flex:2,discover:1},sub:{cs:3,math:2},
+   careers:"Software engineer, ML engineer, security analyst, product engineer",also:"Data Science, Computer Engineering, Information Systems",ws:"mix"},
+  {n:"Data Science & Statistics",cip:"30.7001",i:["numbers","tech","business"],s:{quant:3,analysis:3,detail:2},g:{pay:3,stable:2,discover:2},sub:{math:3,cs:2},
+   careers:"Data analyst, data scientist, actuary, quantitative researcher",also:"Mathematics, Economics, Computer Science",ws:"solo"},
+  {n:"Mechanical Engineering",cip:"14.1901",i:["building","numbers","tech"],s:{quant:3,hands:2,analysis:2,detail:2},g:{pay:3,stable:3},sub:{math:3,lab:2},
+   careers:"Design engineer, robotics, aerospace, manufacturing, energy systems",also:"Aerospace Eng., Industrial Eng., Mechatronics",ws:"team"},
+  {n:"Civil & Environmental Engineering",cip:"14.0801",i:["building","environment","numbers"],s:{quant:3,hands:1,detail:3,analysis:1},g:{stable:3,pay:2,impact:2},sub:{math:3,lab:2},
+   careers:"Structural engineer, water resources, transportation planner",also:"Environmental Eng., Architecture, Urban Planning",ws:"team"},
+  {n:"Nursing (BSN)",cip:"51.3801",i:["health","people","science"],s:{empathy:3,detail:3,hands:2},g:{stable:3,impact:3,pay:2},sub:{lab:2},
+   careers:"Registered nurse, nurse practitioner (with grad school), public health nurse",also:"Public Health, Health Sciences, Respiratory Therapy",ws:"team"},
+  {n:"Biology / Pre-Med",cip:"26.0101",i:["science","health","environment"],s:{analysis:3,detail:2,quant:1,hands:1},g:{discover:3,impact:2,pay:1},sub:{lab:3,math:1},
+   careers:"Physician (via med school), researcher, lab scientist, genetic counselor",also:"Biochemistry, Neuroscience, Public Health",ws:"mix",grad:true},
+  {n:"Chemistry & Biochemistry",cip:"40.0501",i:["science","numbers","health"],s:{quant:2,analysis:3,hands:2,detail:2},g:{discover:3,pay:2,stable:1},sub:{lab:3,math:2},
+   careers:"Pharmaceutical scientist, materials chemist, pharmacist (via PharmD)",also:"Chemical Eng., Biology, Materials Science",ws:"mix",grad:true},
+  {n:"Environmental Science",cip:"03.0104",i:["environment","science","society"],s:{analysis:3,hands:1,writing:1},g:{impact:3,discover:2,create:1},sub:{lab:2,social:1},
+   careers:"Environmental consultant, conservation scientist, sustainability analyst",also:"Ecology, Geology, Environmental Policy",ws:"mix"},
+  {n:"Psychology",cip:"42.0101",i:["people","science","health"],s:{empathy:3,analysis:2,writing:1},g:{impact:3,discover:2},sub:{social:2,lab:1},
+   careers:"Counselor or therapist (with grad school), UX researcher, HR, clinical research",also:"Neuroscience, Cognitive Science, Social Work",ws:"mix",grad:true},
+  {n:"Public Health",cip:"51.2201",i:["health","society","people"],s:{analysis:2,empathy:2,writing:2,quant:1},g:{impact:3,stable:2},sub:{social:2,lab:1},
+   careers:"Epidemiologist, health educator, health policy analyst",also:"Nursing, Health Administration, Sociology",ws:"team"},
+  {n:"Social Work",cip:"44.0701",i:["people","society","teaching"],s:{empathy:3,lead:1,detail:1},g:{impact:3,stable:2},sub:{social:2,english:1},
+   careers:"Clinical social worker (MSW), school social worker, case manager",also:"Psychology, Human Development, Sociology",ws:"team"},
+  {n:"Elementary / Secondary Education",cip:"13.1202",i:["teaching","people","words"],s:{empathy:2,lead:2,writing:1,detail:1},g:{impact:3,stable:3},sub:{english:1,social:1},
+   careers:"Teacher, curriculum designer, school counselor, education policy",also:"Child Development, Subject major + teaching cert",ws:"team"},
+  {n:"Business Administration",cip:"52.0201",i:["business","people","media"],s:{lead:3,empathy:1,detail:1,quant:1},g:{pay:2,flex:2,stable:2},sub:{social:1,math:1},
+   careers:"Manager, consultant, entrepreneur, operations or sales leader",also:"Marketing, Management, Entrepreneurship",ws:"team"},
+  {n:"Finance",cip:"52.0801",i:["business","numbers"],s:{quant:3,analysis:2,detail:2},g:{pay:3,stable:2},sub:{math:3,social:1},
+   careers:"Financial analyst, investment banker, corporate finance, financial planner",also:"Accounting, Economics, Data Science",ws:"mix"},
+  {n:"Economics",cip:"45.0601",i:["society","numbers","business"],s:{quant:2,analysis:3,writing:1},g:{pay:2,discover:2,impact:1},sub:{social:3,math:2},
+   careers:"Economic analyst, policy researcher, consultant, law school path",also:"Finance, Public Policy, Political Science",ws:"solo"},
+  {n:"Marketing",cip:"52.1401",i:["business","media","arts"],s:{creative:2,lead:2,empathy:2,writing:1},g:{pay:2,create:2,flex:2},sub:{artclass:1,english:1},
+   careers:"Brand manager, digital marketer, market researcher, growth lead",also:"Communication, Business, Graphic Design",ws:"team"},
+  {n:"Political Science",cip:"45.1001",i:["society","words","people"],s:{writing:3,analysis:2,lead:2},g:{impact:2,discover:2},sub:{social:3,english:2},
+   careers:"Policy analyst, campaign staff, lawyer (via law school), government",also:"Public Policy, History, International Relations",ws:"team",grad:true},
+  {n:"History",cip:"54.0101",i:["society","words"],s:{writing:3,analysis:3,detail:1},g:{discover:3,impact:1},sub:{social:3,english:2},
+   careers:"Archivist, museum curator, teacher, law school, researcher",also:"Political Science, Anthropology, English",ws:"solo",grad:true},
+  {n:"English & Creative Writing",cip:"23.0101",i:["words","arts","media"],s:{writing:3,creative:2,analysis:2},g:{create:3,discover:2,flex:1},sub:{english:3},
+   careers:"Editor, writer, content strategist, publisher, teacher",also:"Journalism, Communication, Comparative Literature",ws:"solo"},
+  {n:"Communication & Journalism",cip:"09.0101",i:["media","words","society"],s:{writing:3,empathy:1,lead:1,creative:1},g:{create:2,impact:1,flex:2},sub:{english:2,social:1},
+   careers:"Reporter, PR specialist, producer, social media manager",also:"Marketing, English, Film & Media Studies",ws:"team"},
+  {n:"Graphic & UX Design",cip:"50.0409",i:["arts","tech","media"],s:{creative:3,detail:2,empathy:1},g:{create:3,flex:2,pay:1},sub:{artclass:3,cs:1},
+   careers:"UX/UI designer, brand designer, art director, product designer",also:"Human-Computer Interaction, Fine Arts, Industrial Design",ws:"mix"},
+  {n:"Architecture",cip:"04.0201",i:["arts","building","environment"],s:{creative:3,quant:1,hands:2,detail:2},g:{create:3,stable:1},sub:{artclass:2,math:2},
+   careers:"Architect (licensure path), urban designer, interior architect",also:"Civil Eng., Urban Planning, Interior Design",ws:"team"},
+  {n:"Music, Theatre & Film",cip:"50.0901",i:["perform","arts","media"],s:{creative:3,hands:2,lead:1},g:{create:3,flex:2},sub:{artclass:3},
+   careers:"Performer, composer, producer, sound engineer, arts administrator",also:"Music Technology, Film Production, Arts Management",ws:"team"},
+  {n:"Mathematics",cip:"27.0101",i:["numbers","science"],s:{quant:3,analysis:3},g:{discover:3,pay:2},sub:{math:3},
+   careers:"Actuary, cryptographer, quant analyst, professor, teacher",also:"Statistics, Physics, Computer Science",ws:"solo",grad:true},
+  {n:"Kinesiology & Exercise Science",cip:"31.0505",i:["health","science","teaching"],s:{hands:2,empathy:2,analysis:1},g:{impact:2,stable:2},sub:{lab:2},
+   careers:"Physical therapist (DPT), athletic trainer, strength coach, OT path",also:"Health Sciences, Nutrition, Public Health",ws:"team",grad:true},
+  {n:"Information Technology",cip:"11.0103",i:["tech","building","business"],s:{hands:2,detail:3,quant:1},g:{stable:3,pay:2,flex:1},sub:{cs:2},
+   careers:"Network admin, cloud engineer, IT support lead, cybersecurity",also:"Cybersecurity, Computer Science, Information Systems",ws:"mix"}
+];
+
+// ---------- School archetypes ----------
+const SCHOOLS = [
+  {n:"Large public research university",size:"large",setting:["city","suburb","town"],cost:{low:2,mid:2,aid:1},vibe:["research","spirit","diverse"],
+   desc:"Hundreds of majors, big labs, Division I sports. Intro classes can be large; you seek out opportunities yourself.",
+   pros:["In-state tuition can be a strong value","Easy to switch majors without transferring","Deep alumni networks"],
+   look:"Honors college, undergrad research programs, in-state tuition"},
+  {n:"Small liberal arts college",size:"small",setting:["town","suburb"],cost:{low:0,mid:2,aid:2},vibe:["smallclass","community","research"],
+   desc:"Seminar-style classes, professors who know you, strong writing across every major.",
+   pros:["High rates of grad and professional school","Many offer generous need-based aid","Flexible to explore before declaring"],
+   look:"Average class size, net price calculator, grad school placement"},
+  {n:"Institute of technology / polytechnic",size:"mid",setting:["city","suburb"],cost:{low:1,mid:2,aid:1},vibe:["career","research"],
+   desc:"Engineering, computing, and science at the center, with hands-on project and lab work from year one.",
+   pros:["Strong employer recruiting in STEM","Project-based learning","Maker spaces and research labs"],
+   look:"Co-op or capstone programs, job placement rates by major"},
+  {n:"Co-op or career-focused university",size:"mid",setting:["city"],cost:{low:1,mid:2,aid:1},vibe:["career","flexible"],
+   desc:"Built around paid work terms alternating with classes, so you graduate with real experience.",
+   pros:["Paid work experience offsets cost","Graduate with a résumé and references","Clear path into industry"],
+   look:"Co-op structure, average co-op pay, employer partners"},
+  {n:"Mid-size private university",size:"mid",setting:["city","suburb"],cost:{low:0,mid:2,aid:2},vibe:["research","smallclass","diverse","spirit"],
+   desc:"A balance of breadth and attention. Pre-professional tracks with access to faculty.",
+   pros:["Strong advising for pre-med and pre-law","Smaller classes than big publics","Merit scholarships are common"],
+   look:"Merit aid, pre-professional advising, study abroad"},
+  {n:"Community college, then transfer",size:"any",setting:["city","suburb","town"],cost:{low:3,mid:1,aid:2},vibe:["flexible","smallclass"],
+   desc:"Two years of general education at low cost, then transfer to a four-year school to finish the bachelor's.",
+   pros:["Cuts total cost substantially","Guaranteed transfer agreements in many states","Live at home, work part-time"],
+   look:"Articulation agreements with your target four-year schools"},
+  {n:"Art, design or conservatory school",size:"small",setting:["city"],cost:{low:0,mid:2,aid:1},vibe:["arts","community","smallclass"],
+   desc:"Studio-based training with working artists. Portfolio or audition required for admission.",
+   pros:["Intensive studio and performance time","Peers who share your focus","Industry connections in creative fields"],
+   look:"Portfolio requirements, alumni work, studio access"},
+  {n:"Regional public university",size:"mid",setting:["suburb","town"],cost:{low:3,mid:1,aid:1},vibe:["community","career","flexible"],
+   desc:"Affordable and teaching-focused, with strong programs in nursing, education, business, and engineering tech.",
+   pros:["Lower cost and debt","Strong local employer ties","Smaller classes than flagship publics"],
+   look:"Licensure pass rates (nursing, teaching), local job placement"}
+];
+const SCHOOL_MAJOR_AFFINITY = {
+  "Institute of technology / polytechnic":["Computer Science","Data Science & Statistics","Mechanical Engineering","Civil & Environmental Engineering","Mathematics","Information Technology","Architecture","Chemistry & Biochemistry"],
+  "Co-op or career-focused university":["Mechanical Engineering","Computer Science","Business Administration","Finance","Information Technology","Marketing","Nursing (BSN)"],
+  "Small liberal arts college":["English & Creative Writing","History","Political Science","Psychology","Economics","Mathematics","Biology / Pre-Med","Environmental Science"],
+  "Art, design or conservatory school":["Graphic & UX Design","Music, Theatre & Film","Architecture"],
+  "Regional public university":["Nursing (BSN)","Elementary / Secondary Education","Business Administration","Social Work","Information Technology","Kinesiology & Exercise Science"],
+  "Mid-size private university":["Biology / Pre-Med","Political Science","Finance","Psychology","Economics","Public Health"],
+  "Large public research university":MAJORS.map(m=>m.n),
+  "Community college, then transfer":["Business Administration","Information Technology","Psychology","Elementary / Secondary Education","Nursing (BSN)","Communication & Journalism"]
+};
+
+// ---------- State ----------
+const EXAMPLE = {
+  interests:["tech","arts","people","numbers"],
+  subjects:{math:4,lab:3,english:3,social:2,artclass:4,cs:5},
+  strengths:{quant:4,writing:3,creative:4,empathy:4,hands:2,analysis:4,lead:3,detail:3},
+  goals:{pay:4,impact:3,stable:3,create:4,discover:2,flex:4},
+  workstyle:"mix", plan:"work",
+  size:"mid", setting:"city", distance:"region", cost:"aid", vibes:["career","smallclass","arts"]
+};
+const BLANK = {interests:[],subjects:{},strengths:{},goals:{},workstyle:null,plan:null,size:null,setting:null,distance:null,cost:null,vibes:[]};
+const KEY = "major-finder-v1";
+let state, step = 0, isExample = true;
+try { const saved = JSON.parse(localStorage.getItem(KEY) || "null"); if (saved && saved.a) { state = saved.a; isExample = !!saved.ex; step = saved.step || 0; } } catch (e) {}
+if (!state) state = structuredClone(EXAMPLE);
+function save(){ try { localStorage.setItem(KEY, JSON.stringify({a:state, ex:isExample, step})); } catch(e){} }
+function touch(){ if (isExample) { isExample = false; setRail(); } save(); }
+function setRail(){
+  document.getElementById("railMsg").textContent = isExample
+    ? "Example answers are filled in so you can see how it works. Change anything, or start fresh."
+    : "Your answers are saved in this browser only. On a shared computer, start over when you're done.";
+}
+
+const STEP_NAMES = ["Interests","Strengths","Goals","School fit","Your results"];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function complete(i){
+  if (i===0) return state.interests.length >= 2 && Object.keys(state.subjects).length === SUBJECTS.length;
+  if (i===1) return Object.keys(state.strengths).length === STRENGTHS.length && !!state.workstyle;
+  if (i===2) return Object.keys(state.goals).length === GOALS.length && !!state.plan;
+  if (i===3) return state.size && state.setting && state.distance && state.cost;
+  return true;
+}
+function missing(i){
+  if (i===0) { if (state.interests.length<2) return "Pick at least 2 interests."; return "Rate every subject."; }
+  if (i===1) { if (Object.keys(state.strengths).length<STRENGTHS.length) return "Rate every strength."; return "Choose how you like to work."; }
+  if (i===2) { if (Object.keys(state.goals).length<GOALS.length) return "Rate every goal."; return "Choose your plan after college."; }
+  if (i===3) return "Answer size, setting, distance and cost.";
+  return "";
+}
+
+// ---------- Renderers ----------
+function renderSteps(){
+  const el = document.getElementById("steps");
+  el.innerHTML = STEP_NAMES.map((n,i)=>{
+    const reachable = i===0 || [...Array(i).keys()].every(complete);
+    const cls = (i===step?"on ":"") + (i<4 && complete(i) ? "done":"");
+    return `<li><button type="button" class="${cls}" data-go="${i}" ${reachable?"":"disabled"} ${i===step?'aria-current="step"':''}><span class="n">${i<4?String(i+1).padStart(2,"0"):"→"}</span><span>${n}</span></button></li>`;
+  }).join("");
+}
+function chips(name, list, selected){
+  return `<div class="chips">${list.map(([k,l])=>`<button type="button" class="chip" data-multi="${name}" data-v="${k}" aria-pressed="${selected.includes(k)}"><span class="tick">✓</span>${esc(l)}</button>`).join("")}</div>`;
+}
+function ratings(name, list, values, lowHigh){
+  return `<div class="scale-legend"><span>1 = ${lowHigh[0]}</span><span>5 = ${lowHigh[1]}</span></div>
+  <div class="ratings">${list.map(([k,l,h])=>`<div class="rate-row"><div class="lbl"><b>${esc(l)}</b>${h?`<span>${esc(h)}</span>`:""}</div>
+  <div class="scale" role="group" aria-label="${esc(l)}">${[1,2,3,4,5].map(v=>`<button type="button" data-rate="${name}" data-k="${k}" data-v="${v}" aria-pressed="${values[k]===v}" aria-label="${v}">${v}</button>`).join("")}</div></div>`).join("")}</div>`;
+}
+function opts(name, list, val){
+  return `<div class="opts">${list.map(([k,l,h])=>`<button type="button" class="opt" data-one="${name}" data-v="${k}" aria-pressed="${val===k}"><b>${esc(l)}</b>${h?`<span>${esc(h)}</span>`:""}</button>`).join("")}</div>`;
+}
+function nav(){
+  const ok = complete(step);
+  return `<div class="nav">${step>0?`<button type="button" class="btn" data-go="${step-1}">Back</button>`:"<span></span>"}
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end">${ok?"":`<span class="warn">${missing(step)}</span>`}
+    <button type="button" class="btn primary" data-go="${step+1}" ${ok?"":"disabled"}>${step===3?"See my results":"Continue"}</button></div></div>`;
+}
+function head(n, title, sub){ return `<header class="sheet-head"><span class="eyebrow">Section ${n} of 4</span><h2>${title}</h2><p>${sub}</p></header>`; }
+
+function render(){
+  renderSteps();
+  setRail();
+  const s = document.getElementById("sheet");
+  let h = "";
+  if (step===0) h = head(1,"What pulls you in?","Choose the topics you'd read about or do for fun even if nobody assigned them. Then rate how much you enjoy each kind of class.")
+    + `<section class="q"><span class="q-title">Interests</span><p class="q-hint">Pick 2 to 6.</p>${chips("interests",INTERESTS,state.interests)}</section>`
+    + `<section class="q"><span class="q-title">How much do you enjoy these classes?</span>${ratings("subjects",SUBJECTS,state.subjects,["dread it","love it"])}</section>`;
+  if (step===1) h = head(2,"What are you good at?","Think about feedback from teachers, coaches, and friends, and what feels easy to you but hard for others.")
+    + `<section class="q">${ratings("strengths",STRENGTHS,state.strengths,["not yet","a real strength"])}</section>`
+    + `<section class="q"><span class="q-title">How do you like to work?</span>${opts("workstyle",WORKSTYLE,state.workstyle)}</section>`;
+  if (step===2) h = head(3,"What do you want out of it?","There's no right answer. These trade off against each other, so be honest about what matters most.")
+    + `<section class="q">${ratings("goals",GOALS,state.goals,["doesn't matter","essential"])}</section>`
+    + `<section class="q"><span class="q-title">After your bachelor's, you'd most likely…</span>${opts("plan",PLAN,state.plan)}</section>`;
+  if (step===3) h = head(4,"What kind of place fits you?","These shape which types of schools to look at. Pick “No preference” if you genuinely don't mind.")
+    + `<section class="q"><span class="q-title">Size</span>${opts("size",SIZE,state.size)}</section>`
+    + `<section class="q"><span class="q-title">Setting</span>${opts("setting",SETTING,state.setting)}</section>`
+    + `<section class="q"><span class="q-title">Distance from home</span>${opts("distance",DISTANCE,state.distance)}</section>`
+    + `<section class="q"><span class="q-title">Cost</span>${opts("cost",COST,state.cost)}</section>`
+    + `<section class="q"><span class="q-title">What would make campus feel right?</span><p class="q-hint">Optional. Pick any.</p>${chips("vibes",VIBES,state.vibes)}</section>`;
+  if (step<4) h += nav();
+  else h = results();
+  s.innerHTML = h;
+}
+
+// ---------- Scoring ----------
+function scoreMajor(m){
+  const r = v => ((v||3)-1)/4; // 0..1
+  // interests: matched tags weighted by position
+  const w = [1,.75,.55];
+  let iMax=0,iGot=0; m.i.forEach((t,k)=>{ iMax+=w[k]; if (state.interests.includes(t)) iGot+=w[k]; });
+  let subMax=0, subGot=0; for (const k in m.sub){ subMax+=m.sub[k]; subGot+=m.sub[k]*r(state.subjects[k]); }
+  const interest = .65*(iGot/iMax) + .35*(subMax?subGot/subMax:.5);
+  let sMax=0,sGot=0; for (const k in m.s){ sMax+=m.s[k]; sGot+=m.s[k]*r(state.strengths[k]); }
+  const strength = sGot/sMax;
+  // goals: alignment between what the student values and what the field offers
+  let gNum=0,gDen=0; GOALS.forEach(([k])=>{ const imp=r(state.goals[k]); const off=(m.g[k]||0)/3; gNum+=imp*off; gDen+=imp; });
+  let goal = gDen ? gNum/gDen : .5; goal = Math.min(1, goal*1.6);
+  let bonus = 0;
+  if (state.workstyle && m.ws && state.workstyle===m.ws) bonus += .03;
+  if (state.plan==="grad" && m.grad) bonus += .04;
+  if (state.plan==="work" && m.grad) bonus -= .03;
+  const total = .45*interest + .32*strength + .23*goal + bonus;
+  return {m, total, interest, strength, goal};
+}
+function reasons(x){
+  const m = x.m, out = [];
+  const hits = m.i.filter(t=>state.interests.includes(t)).map(t=>INTERESTS.find(z=>z[0]===t)[1].toLowerCase());
+  if (hits.length) out.push(`it lines up with your interest in ${listJoin(hits)}`);
+  const sk = Object.keys(m.s).filter(k=>(state.strengths[k]||0)>=4).sort((a,b)=>m.s[b]-m.s[a]).slice(0,2).map(k=>STRENGTHS.find(z=>z[0]===k)[1].toLowerCase());
+  if (sk.length) out.push(`it draws on your strength in ${listJoin(sk)}`);
+  const gk = Object.keys(m.g).filter(k=>m.g[k]>=2 && (state.goals[k]||0)>=4).map(k=>GOALS.find(z=>z[0]===k)[1].toLowerCase());
+  if (gk.length) out.push(`it offers the ${listJoin(gk)} you said matter to you`);
+  const weak = Object.keys(m.s).filter(k=>m.s[k]===3 && (state.strengths[k]||3)<=2).map(k=>STRENGTHS.find(z=>z[0]===k)[1].toLowerCase());
+  let txt = out.length ? cap(listJoin(out, "; ")) + "." : "A reasonable match across your answers.";
+  if (weak.length) txt += ` Expect to build up ${listJoin(weak)}, which this field leans on heavily.`;
+  return txt;
+}
+function scoreSchool(sc, topMajors){
+  let s = 0, max = 0;
+  max += 3; if (state.size==="any" || sc.size==="any") s+=2; else if (sc.size===state.size) s+=3; else if (sc.size==="mid"||state.size==="mid") s+=1.2;
+  max += 2; if (state.setting==="any" || sc.setting.includes(state.setting)) s+=2;
+  max += 3; s += (sc.cost[state.cost]||0);
+  max += 1; if (state.distance==="home" && sc.n.startsWith("Community")) s+=1; else if (state.distance!=="home") s+=.6; else s+=.4;
+  const v = state.vibes; max += Math.max(1, v.length); s += v.filter(x=>sc.vibe.includes(x)).length;
+  const aff = SCHOOL_MAJOR_AFFINITY[sc.n]||[]; max += 3;
+  const mh = topMajors.filter(m=>aff.includes(m.m.n)).length; s += Math.min(3, mh*1.1);
+  if (sc.n.startsWith("Art") && !topMajors.slice(0,3).some(m=>aff.includes(m.m.n))) s -= 3;
+  const majorsHere = topMajors.filter(m=>aff.includes(m.m.n)).slice(0,3).map(m=>m.m.n);
+  return {sc, fit: Math.max(0, s/max), majorsHere};
+}
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+function listJoin(a, sep){ if (sep) return a.join(sep); if (a.length<2) return a.join(""); return a.slice(0,-1).join(", ")+" and "+a[a.length-1]; }
+
+function ring(p){
+  const R=24, C=2*Math.PI*R, off=C*(1-p/100);
+  return `<svg viewBox="0 0 58 58" aria-hidden="true"><circle cx="29" cy="29" r="${R}" fill="none" stroke="var(--line)" stroke-width="5"/>
+  <circle cx="29" cy="29" r="${R}" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90 29 29)"/>
+  <text x="29" y="34" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" fill="var(--ink)">${p}</text></svg>`;
+}
+
+function results(){
+  const ranked = MAJORS.map(scoreMajor).sort((a,b)=>b.total-a.total);
+  const hi = ranked[0].total, lo = ranked[ranked.length-1].total;
+  const pct = t => Math.round(55 + 41*((t-lo)/((hi-lo)||1)));
+  const top = ranked.slice(0,5), next = ranked.slice(5,9);
+  const schools = SCHOOLS.map(sc=>scoreSchool(sc, ranked.slice(0,6))).sort((a,b)=>b.fit-a.fit).slice(0,3);
+
+  const strengthBars = [...STRENGTHS].sort((a,b)=>(state.strengths[b[0]]||0)-(state.strengths[a[0]]||0)).slice(0,4)
+    .map(([k,l])=>`<div class="bar"><span>${esc(l)}</span><i style="--w:${(state.strengths[k]||0)*20}%"></i></div>`).join("");
+  const goalBars = [...GOALS].sort((a,b)=>(state.goals[b[0]]||0)-(state.goals[a[0]]||0)).slice(0,4)
+    .map(([k,l])=>`<div class="bar"><span>${esc(l)}</span><i style="--w:${(state.goals[k]||0)*20}%"></i></div>`).join("");
+  const intTags = state.interests.map(k=>`<span class="tag">${esc(INTERESTS.find(z=>z[0]===k)[1])}</span>`).join("");
+
+  const majorCards = top.map((x,i)=>`<article class="major ${i===0?"top":""}">
+    <div class="score">${ring(pct(x.total))}<small>MATCH</small></div>
+    <div class="major-head"><h3>${esc(x.m.n)}</h3><span class="cip">CIP ${x.m.cip}</span>${i===0?'<span class="best">Strongest fit</span>':""}</div>
+    <p class="why">${esc(reasons(x))}</p>
+    <dl class="meta"><div><dt>Where it leads</dt><dd>${esc(x.m.careers)}</dd></div><div><dt>Related majors to compare</dt><dd>${esc(x.m.also)}</dd></div></dl>
+  </article>`).join("");
+
+  const schoolCards = schools.map(x=>`<article class="school">
+    <div class="top-line"><h3>${esc(x.sc.n)}</h3><span class="fit">${Math.round(x.fit*100)}% fit</span></div>
+    <p>${esc(x.sc.desc)}</p>
+    <ul>${x.sc.pros.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
+    ${x.majorsHere.length?`<div class="look"><b>Strong for:</b> ${esc(x.majorsHere.join(", "))}</div>`:""}
+    <div class="look"><b>Compare schools on:</b> ${esc(x.sc.look)}</div>
+  </article>`).join("");
+
+  const t = top[0].m.n;
+  const planLine = state.plan==="grad" ? "Since you're planning on grad or professional school, look at each school's acceptance rates into those programs, not just its job placement."
+    : state.plan==="unsure" ? "Since you're not sure about grad school, favor schools where switching majors is easy and advising is strong."
+    : "Since you plan to work right after, ask each school for job placement and internship rates in your intended major.";
+  const costLine = state.cost==="low" ? "Run each school's net price calculator early. Sticker price and real cost are often very different."
+    : state.cost==="aid" ? "Submit the FAFSA (and CSS Profile where required) and run net price calculators. Need-based aid varies a lot between schools."
+    : "Compare total four-year cost against outcomes in your major, and look for merit scholarships.";
+
+  return `<header class="sheet-head"><span class="eyebrow">Your results</span><h2>${esc(t)} leads, with ${esc(top[1].m.n)} and ${esc(top[2].m.n)} close behind</h2>
+    <p>These are starting points to explore, ranked by how well each field matches your answers. Take a class, talk to a student in the major, or shadow someone in the job before deciding.</p></header>
+  <section class="profile">
+    <div><h3>Interests</h3><div class="tags">${intTags}</div></div>
+    <div><h3>Top strengths</h3><div class="bars">${strengthBars}</div></div>
+    <div><h3>What matters most</h3><div class="bars">${goalBars}</div></div>
+  </section>
+  <section class="q"><span class="eyebrow">Recommended majors</span><div class="majors">${majorCards}</div>
+    <p class="more"><b>Also worth a look:</b> ${next.map(x=>esc(x.m.n)).join(" · ")}</p></section>
+  <section class="q"><span class="eyebrow">Schools to look for</span><p class="q-hint" style="margin-top:0">Based on your preferences and top majors. Use these as search filters, then build a list of specific schools.</p><div class="schools">${schoolCards}</div></section>
+  <section class="q"><span class="eyebrow">Next steps</span><ol class="next">
+    <li>Read the course requirements for ${esc(t)} at two or three schools. If the required classes sound interesting, that's a good sign.</li>
+    <li>Talk to someone who studied ${esc(top[1].m.n)} or works in it. Ask what a normal week looks like.</li>
+    <li>${esc(planLine)}</li>
+    <li>${esc(costLine)}</li>
+    <li>Build a list of 8–12 schools across reach, target, and likely admission, using the school types above.</li>
+  </ol></section>
+  <p class="fine">Match scores compare these majors to each other based on your answers. They aren't predictions of success. CIP codes are the U.S. Department of Education's Classification of Instructional Programs, useful for looking up programs on College Scorecard.</p>
+  <div class="nav"><button type="button" class="btn" data-go="3">Back</button><button type="button" class="btn primary" data-go="0">Change my answers</button></div>`;
+}
+
+// ---------- Events ----------
+document.addEventListener("click", e=>{
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  if (b.id==="clearBtn"){ state = structuredClone(BLANK); isExample=false; step=0; save(); render(); return; }
+  if (b.dataset.go!==undefined){ const g=+b.dataset.go; if (g>step && !complete(step)) return; step=g; save(); render(); window.scrollTo({top:0,behavior:"smooth"}); return; }
+  if (b.dataset.multi){ const arr=state[b.dataset.multi]; const v=b.dataset.v; const i=arr.indexOf(v); if(i>=0) arr.splice(i,1); else { if (b.dataset.multi==="interests" && arr.length>=6) return; arr.push(v);} touch(); rerenderKeepFocus(b); return; }
+  if (b.dataset.rate){ state[b.dataset.rate][b.dataset.k]=+b.dataset.v; touch(); rerenderKeepFocus(b); return; }
+  if (b.dataset.one){ state[b.dataset.one]=b.dataset.v; touch(); rerenderKeepFocus(b); return; }
+});
+function rerenderKeepFocus(b){
+  const sel = ["multi","rate","one","k","v"].filter(k=>b.dataset[k]).map(k=>`[data-${k}="${b.dataset[k]}"]`).join("");
+  const y = window.scrollY; render(); window.scrollTo(0,y);
+  const nb = document.querySelector(sel); if (nb) nb.focus({preventScroll:true});
+}
+render();
+</script>
+</body>
+</html>
